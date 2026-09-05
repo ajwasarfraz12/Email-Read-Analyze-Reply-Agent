@@ -1,0 +1,324 @@
+{
+  "name": "Email Read, Analyze  & Reply Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 2
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "15b58701-c755-4978-a23d-831cd47f7708",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "labelIds": [
+            "UNREAD"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        48,
+        0
+      ],
+      "id": "6bc8a3a7-0fc3-489b-a236-2b434ca1b468",
+      "name": "Gmail All Mails",
+      "webhookId": "64dc65eb-4ad5-4c20-9a4c-1f9bed2b0a36",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CI3uUpkx49nxcgWq",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.threadId }}",
+        "simple": false,
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        256,
+        0
+      ],
+      "id": "97dc0dc6-161f-4b7f-9ee2-a3e7dbd26600",
+      "name": "Gmail All Details",
+      "webhookId": "be084a90-87e6-4489-922d-f413c903a956",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CI3uUpkx49nxcgWq",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Subject: {{ $json.subject }}\nEmail Body: {{ $json.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "<Agentinstructions>\n    <Role>\n       <name> Email Reply Agent </name>\n       <Description> A Helpful Email Reply Agent </Description>\n    </Role>\n\n\n    <Goal>\n       <primary> Draft custom but very professional email replies which are 100% humanlike. </primary>\n       <secondary> As an Email Reply Agent you should not only reply but build trust and reputation with the person you are replying to. </secondary>\n    </Goal>\n\n\n    <Instructions>\n       <Instruction1> Once you receive the email, you should thoroughly understand and analze th esubject line nad full email body message. </Instruction1>\n       <Instruction2> After you read the email, Review <Details> and <Aims> to understand the context of the user before drafting a reply. </Instruction2>\n       <Instruction3> Draft a professional Reply using <Userinfo> Use Age where necessary. </Instruction3>\n    </Instructions>\n\n    <Userinfo>\n       <Details> \n           <Detail1 name = \" User Name \"> Ajwa Sarfraz </Detail1>\n           <Detail2 name = \" Company \"> Agentic AI Learning </Detail2>\n           <Detail3 name = \" Age \"> 19 </Detail3>\n           <Detail4 name = \" Contact Info \"> +92-0987654321 </Detail4>\n        </Details>\n\n        <Aims>\n            <Aim1 name = \"Mission\"> Wants to teach AI to people in the most simplest way. </Aim1>\n            <Aim2 name = \"Focus\"> Rightnow focussing more on Teaching rather than Collabs and Promotions. </Aim2>\n            <Aim3 name = \"Community Focus\"> Focus on Community Right now. </Aim3>\n        </Aims>\n    </Userinfo>\n\n    <Examples>\n       <Example1>\n           <UserInput>\n               Subject: Promotional Message\n               TThis email is regarding a promotion that we are going to give you..\n            </UserInput>\n\n            <UserOutput>\n            Dear Sir/Madam,\n             Thank you for reaching out and considering me for this promotional opportunity.\n             I truly appreciate your interest in collaborating with Agentic AI Learning. At the moment, my primary focus is on building and supporting our learning community by teaching AI concepts in the simplest and most accessible way possible. Because of this, I am currently prioritizing educational initiatives and community-focused activities over promotional collaborations.\n             That said, I sincerely value your message and the opportunity you presented. I would be happy to stay connected and potentially explore suitable opportunities together in the future if they align with our mission and community goals.\n             Thank you once again for your understanding and support.\n            Best regards,\n            Ajwa Sarfraz\n            Agentic AI Learning\n            +92-0987654321\n            </UserOutput>\n        </Example1>\n\n        <Example2>\n           <UserInput>\n             Subject: Regarding Project Details\n             I want to know if you are interested in this project. I am going to give you the details of it.\n           </UserInput>\n\n           <UserOutput>\n              Dear Sir/Madam,\n                 Thank you for reaching out and considering me for your project opportunity.\n                 I appreciate you taking the time to contact me regarding the project details. I would be interested in learning more about the project, its goals, and the expectations involved. Please feel free to share the complete details so I can review them properly.\n                 Currently, my main focus is on building and supporting the AI learning community through simple and practical education. However, I am always open to exploring meaningful projects that align with our vision and values.\n                 Looking forward to hearing more from you.\n            Best regards,\n            Ajwa Sarfraz\n            Agentic AI Learning\n            +92-0987654321\n            </UserOutput>\n        </Example2>\n\n     \n       <Example3>\n          <UserInput>\n             Subject: Requesting Meeting Time\n             Hey..I wanted your meeting time for Tuesday morning of this month. Would it be possible?\n          </UserInput>\n\n         <UserOutput>\n           Dear Sir/Madam,\n            Thank you for reaching out.\n            I appreciate your interest in scheduling a meeting. Tuesday morning would be possible, and I would be happy to discuss further details with you. Kindly let me know your preferred timing and agenda for the meeting so we can arrange it accordingly.\n            Looking forward to your response and a productive discussion.\n           Best regards,\n           Ajwa Sarfraz\n           Agentic AI Learning\n           +92-0987654321\n         </UserOutput>\n        </Example3>\n    </Examples>\n</Agentinstructions>"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "c371addb-ae38-4abd-9ee2-7ba4c1a0ea04",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-3.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        384,
+        176
+      ],
+      "id": "93f330e8-63ea-4d62-9b84-398c93121f94",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "0AlCCfI4JeqDyK1c",
+          "name": "Google Gemini(PaLM) Api Email aggregator"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "app9rjZJQOtq0Kp8G",
+          "mode": "list",
+          "cachedResultName": "n8n",
+          "cachedResultUrl": "https://airtable.com/app9rjZJQOtq0Kp8G"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblkfoZJxUxeeI8Df",
+          "mode": "list",
+          "cachedResultName": "Email Aggregator",
+          "cachedResultUrl": "https://airtable.com/app9rjZJQOtq0Kp8G/tblkfoZJxUxeeI8Df"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sender Name": "={{ $('Gmail All Details').item.json.from.value[0].name }}",
+            "Email Body": "={{ $('Gmail All Details').item.json.from.text }}",
+            "Body Draft Reply": "={{ $json.output }}",
+            "Thread ID": "={{ $('Gmail All Details').item.json.threadId }}",
+            "From Email": "={{ $('Gmail All Details').item.json.to.value[0].address }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Sender Name",
+              "displayName": "Sender Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "From Email",
+              "displayName": "From Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email Body",
+              "displayName": "Email Body",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Body Draft Reply",
+              "displayName": "Body Draft Reply",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Thread ID",
+              "displayName": "Thread ID",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        0
+      ],
+      "id": "bbefc901-3363-4b5b-bdce-ce209b6094dd",
+      "name": "Combine  all data and reply in table",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "bupqNCPphsvIkh1C",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $json.fields['Thread ID'] }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        0
+      ],
+      "id": "34b40aa5-d670-4d47-b924-c064af6f5332",
+      "name": "Mark a message as read",
+      "webhookId": "674b538a-1897-4ae7-bb5c-c262ae46efc4",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CI3uUpkx49nxcgWq",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Gmail All Mails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail All Mails": {
+      "main": [
+        [
+          {
+            "node": "Gmail All Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail All Details": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Combine  all data and reply in table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine  all data and reply in table": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark a message as read": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "69117bd2-6af5-4767-8054-e842a24ca243",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "445a9d8396049067c8e96eea36e8f0da4421639359e966d872ed9321b3f21b03"
+  },
+  "id": "n4r0dFxlr9e5TwVc",
+  "tags": []
+}
